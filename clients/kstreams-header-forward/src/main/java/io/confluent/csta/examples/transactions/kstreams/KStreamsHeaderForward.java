@@ -67,8 +67,9 @@ public class KStreamsHeaderForward {
                 .stream(topicFrom, Consumed.with(stringSerde, stringSerde))
                 .map((key, value) -> KeyValue.pair(key, value.toUpperCase()))
                 .to(topicTo, Produced.with(stringSerde, stringSerde));
-            KafkaStreams streams = new KafkaStreams(builder.build(), config);
-            streams.start();
+            try (KafkaStreams streams = new KafkaStreams(builder.build(), config)) {
+                streams.start();
+            }
 
         } catch (IOException e) {
             System.err.println("An exception occurred while load properties file: " + e);
